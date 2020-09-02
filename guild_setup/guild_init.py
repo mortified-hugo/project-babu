@@ -1,0 +1,77 @@
+from discord.ext import commands
+import discord
+
+from guild_setup.functions import *
+from guild_setup.checks import *
+from guild_setup.roles import *
+
+
+class GuildInitiation(commands.Cog):
+    """Initiation Commands for evaluating if a guild is ready to play the game
+
+    :param bot: bot to be run"""
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name='guild_pattern')
+    @template_server()
+    async def create_guild_pattern(self, ctx):
+        """Overrides the definition of a valid server to play"""
+        with open('guild_check.txt', mode='w') as file:
+            code = str(gen_checker(guild_info(ctx)))
+            file.write(code)
+        await ctx.send('Pattern overridden')
+
+    @commands.command(name='check_guild')
+    async def check_guild_command(self, ctx):
+        """Checks if guild is an appropriate server to start playing according to the rules
+
+        :param ctx: discord context
+
+        :return: response to context whether the guild is appropriate to play"""
+        checker = check_guild(ctx)
+        if checker:
+            response = '```This server can be used to play```'
+        else:
+            response = '```This server cannot be used to play.\n' \
+                       'Please check the rules on how to organize your server for the game```'
+        await ctx.send(str(response))
+
+    @commands.command(name='setup')  # DO NOT USE THIS COMMAND YET
+    @is_mod()
+    async def guild_setup(self, ctx):
+        """Initiates guild setup, creating the basic roles and channels to play the game"""
+        if check_guild(ctx):
+            #  Create Rolls
+            await ctx.send('```Creating Rolls```')
+            await ctx.guild.create_role(name='Spectator', permissions=spectator_permissions,
+                                        hoist=True, mentionable=True)
+            await ctx.guild.create_role(name='Participant', permissions=participant_permissions,
+                                        hoist=True, mentionable=True)
+            await ctx.guild.create_role(name='Follower', permissions=follower_permissions,
+                                        color=discord.Colour.blue(), mentionable=True)
+            await ctx.guild.create_role(name='Veto Power', permissions=veto_power_permissions,
+                                        color=discord.Colour.green(), mentionable=True)
+            await ctx.guild.create_role(name='Dreader', permissions=dreader_permissions, hoist=True,
+                                        color=discord.Colour.gold(), mentionable=True)
+
+            #  Distribute roles
+            await ctx.send('```Distributing Roles```')
+            for member in ctx.guild.members:
+                if 'mod' in [role.name for role in member.roles]:
+                    pass
+                else:
+                    await member.add_roles(role=get_role(ctx, 'Spectator'))
+
+            #  Create Categories
+            await ctx.send('```Creating Categories for Channels```')
+            await ctx.guild.create_category('Information', position=1)
+            await ctx.guild.create_category('Game Channels', position=2)
+            await ctx.guild.create_category('Moderation', position=3)
+
+            #  Create Text Channels
+            await ctx.send('```Creating Text Channels```')
+            await ctx.guild.create_text_channel
+        else:
+            await ctx.send('```This server cannot be setup```')

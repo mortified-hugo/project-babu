@@ -41,3 +41,18 @@ def check_guild(ctx):
     with open('guild_check.txt', mode='r') as file:
         correct_code = str(file.read())
     return correct_code == guild_code
+
+
+def get_role(ctx, role_name):
+    """Returns the role object based on the role name
+
+    :param ctx: context of the discord guild
+    :param role_name: str representing the discord role name
+
+    :return: discord.Role Object"""
+    for role in ctx.guild.roles:
+        if role_name == role.name:
+            return role
+        else:
+            return ctx.guild.roles[0]
+
