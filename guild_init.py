@@ -22,6 +22,7 @@ class GuildInitiation(commands.Cog):
     @commands.command(name='check_guild')
     async def check_guild_command(self, ctx):
         """Checks if guild is an appropriate server to start playing according to the rules
+
         :param ctx: discord context
 
         :return: response to context whether the guild is appropriate to play"""

@@ -12,6 +12,7 @@ def concatenate_list_data(input_list):
 
 def guild_info(ctx):
     """Creates a reference list for contents of a guild that need to be checked
+
     :param ctx: context of command in discord
 
     :return: list of channels and roles"""
