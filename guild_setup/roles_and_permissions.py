@@ -18,3 +18,13 @@ veto_power_permissions = discord.Permissions()
 
 #  Dreader Role
 dreader_permissions = discord.Permissions()
+
+
+#  Can see but not post
+can_read = discord.PermissionOverwrite(read_messages=True, send_messages=False)
+
+#  Cannot see
+cannot_see = discord.PermissionOverwrite(read_messages=False, send_messages=False)
+
+# Can see and write
+can_see_and_write = discord.PermissionOverwrite(read_messages=True, send_messages=True)
