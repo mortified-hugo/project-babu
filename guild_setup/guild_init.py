@@ -64,7 +64,7 @@ class GuildInitiation(commands.Cog):
             await ctx.guild.create_category('Moderation', position=3)
             await asyncio.sleep(1)
 
-            await ctx.send('```Initial Setup Complete, please type .create_channels next')
+            await ctx.send('```Initial Setup Complete, please type .create_channels next```')
         else:
             await ctx.send('```This server cannot be setup```')
 
@@ -89,27 +89,28 @@ class GuildInitiation(commands.Cog):
         await ctx.guild.create_text_channel(name='spectator-hub',
                                             overwrites={get_role(ctx, 'Participant'): cannot_see,
                                                         get_role(ctx, 'Spectator'): can_see_and_write},
-                                            category=get_category(ctx, 'Information'))
+                                            category=ctx.guild.categories[0])
         await ctx.guild.create_text_channel(name='main-lounge',
                                             overwrites={get_role(ctx, 'Spectator'): can_read},
-                                            category=get_category(ctx, 'Game Channels'))
+                                            category=ctx.guild.categories[1])
         await ctx.guild.create_text_channel(name='game-room',
                                             overwrites={get_role(ctx, 'Spectator'): can_read},
-                                            category=get_category(ctx, 'Game Channels'))
+                                            category=ctx.guild.categories[1])
         await ctx.guild.create_voice_channel(name='Speaker',
-                                             category=get_category(ctx, 'Game Channels'))
+                                             category=ctx.guild.categories[1])
         await ctx.guild.create_text_channel(name='feed',
                                             overwrites={get_role(ctx, 'Participant'): can_read,
                                                         get_role(ctx, 'Spectator'): can_read},
-                                            category=get_category(ctx, 'Information'))
+                                            category=ctx.guild.categories[0])
         await ctx.guild.create_text_channel(name='war-room',
                                             overwrites={get_role(ctx, 'Spectator'): can_read,
                                                         get_role(ctx, 'Participant'): cannot_see,
                                                         get_role(ctx, 'Follower'): can_see_and_write,
                                                         get_role(ctx, 'Dreader'): can_see_and_write},
-                                            category=get_category(ctx, 'Game Channels'))
+                                            category=ctx.guild.categories[1])
         await ctx.guild.create_text_channel(name='mod-hub',
                                             overwrites={get_role(ctx, 'Spectator'): cannot_see,
                                                         get_role(ctx, 'Participant'): cannot_see,
-                                                        get_role(ctx, 'mod'): can_see_and_write})
+                                                        get_role(ctx, 'mod'): can_see_and_write},
+                                            category=ctx.guild.categories[2])
         await ctx.send("```This guild is setup```")
