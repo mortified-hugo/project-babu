@@ -66,8 +66,10 @@ def get_category(ctx, category_name):
     :param category_name: str representing the discord role name
 
     :return: discord.Role Object"""
-    for category in ctx.guild.categories:
-        if category_name == category.name:
-            return category
+    desired_category = None
+    for category in ctx.guild.roles:
+        if str(category.name) == str(category_name):
+            desired_category = category
         else:
-            return ctx.guild.categories[0]
+            pass
+    return desired_category

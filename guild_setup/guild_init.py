@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+import os
 import asyncio
 
 from guild_setup.functions import *
@@ -47,13 +48,21 @@ class GuildInitiation(commands.Cog):
                        'Please check the rules on how to organize your server for the game```'
         await ctx.send(str(response))
 
-    @commands.command(name='.setup')  # DO NOT USE THIS COMMAND YET
+    @commands.command(name='setup')  # DO NOT USE THIS COMMAND YET
     @is_mod()
     async def guild_setup(self, ctx):
         """Initiates guild setup, creating the basic roles and channels to play the game"""
 
         if check_guild(ctx):
+            #  Creating Directory
+            path = f'guilds/{ctx.guild.name}'
+            try:
+                os.mkdir(path)
+            except OSError:
+                await ctx.send('```Guild Directory could not be created```')
+
             #  Create Rolls
+            await asyncio.sleep(1)
             await ctx.send('```Creating Rolls```')
             await ctx.guild.create_role(name='Dreader', permissions=dreader_permissions, hoist=True,
                                         color=discord.Colour.gold(), mentionable=True)
@@ -74,6 +83,7 @@ class GuildInitiation(commands.Cog):
             await asyncio.sleep(1)
 
             await ctx.send('```Initial Setup Complete, please type .create_channels next```')
+
         else:
             await ctx.send('```This server cannot be setup```')
 
@@ -135,3 +145,8 @@ class GuildInitiation(commands.Cog):
         mod = get_role(ctx, 'mod')
         dreader = get_role(ctx, 'Dreader')
         print(participant.name, spectator.name, follower.name, mod.name, dreader.name)
+
+    @commands.command(name='give')
+    async def give_roll(self, ctx, *members: discord.Member):
+        for member in members:
+            await member.add_roles(get_role(ctx, 'Participant'))
