@@ -19,10 +19,17 @@ class GuildInitiation(commands.Cog):
     @template_server()
     async def create_guild_pattern(self, ctx):
         """Overrides the definition of a valid server to play"""
+
         with open('guild_check.txt', mode='w') as file:
             code = str(gen_checker(guild_info(ctx)))
             file.write(code)
         await ctx.send('Pattern overridden')
+
+    @commands.command(name='get_template')
+    async def print_template(self, ctx):
+        """Generates template link"""
+
+        await ctx.send('https://discord.new/zqSamRGVfN5S')
 
     @commands.command(name='check_guild')
     async def check_guild_command(self, ctx):
@@ -31,6 +38,7 @@ class GuildInitiation(commands.Cog):
         :param ctx: discord context
 
         :return: response to context whether the guild is appropriate to play"""
+
         checker = check_guild(ctx)
         if checker:
             response = '```This server can be used to play```'
@@ -39,10 +47,11 @@ class GuildInitiation(commands.Cog):
                        'Please check the rules on how to organize your server for the game```'
         await ctx.send(str(response))
 
-    @commands.command(name='start_setup')  # DO NOT USE THIS COMMAND YET
+    @commands.command(name='.setup')  # DO NOT USE THIS COMMAND YET
     @is_mod()
     async def guild_setup(self, ctx):
         """Initiates guild setup, creating the basic roles and channels to play the game"""
+
         if check_guild(ctx):
             #  Create Rolls
             await ctx.send('```Creating Rolls```')
@@ -71,6 +80,7 @@ class GuildInitiation(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_role_create(self, role):
         """Allows the role of spectator to be distributed to everyone else in the server"""
+
         #  Distribute roles
         if role.name == 'Spectator':
             for member in role.guild.members:
@@ -85,6 +95,8 @@ class GuildInitiation(commands.Cog):
     @commands.command(name='create_channels')
     @is_mod()
     async def create_channels(self, ctx):
+        """Setup command for creating the channels"""
+
         await ctx.send('```Creating Text Channels```')
         await ctx.guild.create_text_channel(name='spectator-hub',
                                             overwrites={get_role(ctx, 'Participant'): cannot_see,
@@ -114,3 +126,12 @@ class GuildInitiation(commands.Cog):
                                                         get_role(ctx, 'mod'): can_see_and_write},
                                             category=ctx.guild.categories[2])
         await ctx.send("```This guild is setup```")
+
+    @commands.command(name='test_roles')
+    async def test_roles(self, ctx):
+        participant = get_role(ctx, 'Participant')
+        spectator = get_role(ctx, "Spectator")
+        follower = get_role(ctx, 'Follower')
+        mod = get_role(ctx, 'mod')
+        dreader = get_role(ctx, 'Dreader')
+        print(participant.name, spectator.name, follower.name, mod.name, dreader.name)

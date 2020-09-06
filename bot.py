@@ -14,6 +14,7 @@ bot = commands.Bot(command_prefix=".")
 @bot.event
 async def on_ready():
     """Read Guilds"""
+
     print(f'{bot.user.name} has connected to Discord!')
     print(f'This bot is currently on {len(bot.guilds)} guilds')
 
