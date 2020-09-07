@@ -10,14 +10,8 @@ participant_permissions = discord.Permissions(read_messages=True, send_messages=
                                               attach_files=True, read_message_history=True, add_reactions=True,
                                               connect=True, mention_everyone=True)
 
-#  Follower Role
-follower_permissions = discord.Permissions()
-
-#  Veto Power Role
-veto_power_permissions = discord.Permissions()
-
-#  Dreader Role
-dreader_permissions = discord.Permissions()
+#  No Special Permissions
+no_permissions = discord.Permissions()
 
 
 #  Can see but not post

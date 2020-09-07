@@ -64,12 +64,17 @@ class GuildInitiation(commands.Cog):
             #  Create Rolls
             await asyncio.sleep(1)
             await ctx.send('```Creating Rolls```')
-            await ctx.guild.create_role(name='Dreader', permissions=dreader_permissions, hoist=True,
+            await ctx.guild.create_role(name='Dreader', permissions=no_permissions, hoist=True,
                                         color=discord.Colour.gold(), mentionable=True)
-            await ctx.guild.create_role(name='Veto Power', permissions=veto_power_permissions,
+            await ctx.guild.create_role(name='Veto Power', permissions=no_permissions,
                                         color=discord.Colour.green(), mentionable=True)
-            await ctx.guild.create_role(name='Follower', permissions=follower_permissions,
+            await ctx.guild.create_role(name='Follower', permissions=no_permissions,
                                         color=discord.Colour.blue(), mentionable=True)
+            n = 1
+            while n <= 20:
+                await ctx.guild.create_role(name=f'{n}', permissions=no_permissions, mentionable=False)
+                n += 1
+
             await ctx.guild.create_role(name='Participant', permissions=participant_permissions,
                                         hoist=True, mentionable=True)
             await ctx.guild.create_role(name='Spectator', permissions=spectator_permissions,
@@ -79,7 +84,9 @@ class GuildInitiation(commands.Cog):
             await ctx.send('```Creating Categories for Channels```')
             await ctx.guild.create_category('Information', position=1)
             await ctx.guild.create_category('Game Channels', position=2)
-            await ctx.guild.create_category('Moderation', position=3)
+            await ctx.guild.create_category('Confession Dial', position=3)
+            await ctx.guild.create_category('Private Conversations', position=4)
+            await ctx.guild.create_category('Moderation', position=5)
             await asyncio.sleep(1)
 
             await ctx.send('```Initial Setup Complete, please type .create_channels next```')
@@ -134,7 +141,7 @@ class GuildInitiation(commands.Cog):
                                             overwrites={get_role(ctx, 'Spectator'): cannot_see,
                                                         get_role(ctx, 'Participant'): cannot_see,
                                                         get_role(ctx, 'mod'): can_see_and_write},
-                                            category=ctx.guild.categories[2])
+                                            category=ctx.guild.categories[4])
         await ctx.send("```This guild is setup```")
 
     @commands.command(name='test_roles')
