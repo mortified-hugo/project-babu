@@ -2,6 +2,8 @@ from discord.ext import commands
 import discord
 import os
 import asyncio
+import numpy as np
+import pandas as pd
 
 from guild_setup.functions import *
 from guild_setup.checks import *
@@ -77,8 +79,39 @@ class GuildInitiation(commands.Cog):
 
     #  Setup Commands
 
+    @commands.command(name='create_roles')
+    async def create_roles(self, ctx):
+        await asyncio.sleep(1)
+        await ctx.send('```Creating Rolls```')
+        await ctx.guild.create_role(name='Dreader', permissions=no_permissions, hoist=True,
+                                    color=discord.Colour.gold(), mentionable=True)
+        await ctx.guild.create_role(name='Veto Power', permissions=no_permissions,
+                                    color=discord.Colour.green(), mentionable=True)
+        await ctx.guild.create_role(name='Follower', permissions=no_permissions,
+                                    color=discord.Colour.blue(), mentionable=True)
+        n = 1
+        while n <= 5:
+            await ctx.guild.create_role(name=f'{n}', permissions=no_permissions, mentionable=False)
+            n += 1
+
+        await ctx.guild.create_role(name='Participant', permissions=participant_permissions,
+                                    hoist=True, mentionable=True)
+        await ctx.guild.create_role(name='Spectator', permissions=spectator_permissions,
+                                    hoist=True, mentionable=True)
+
+    @commands.command(name='create_categories')
+    async def create_categories(self, ctx):
+        """Creates the necessary categories"""
+
+        await ctx.send('```Creating Categories for Channels```')
+        await ctx.guild.create_category('Information', position=1)
+        await ctx.guild.create_category('Game Channels', position=2)
+        await ctx.guild.create_category('Moderation', position=5)
+
+        await ctx.guild.create_category('Confession Dial', position=3)
+        await ctx.guild.create_category('Private Conversations', position=4)
+
     @commands.command(name='create_channels')
-    @is_mod()
     async def create_channels(self, ctx):
         """Setup command for creating the channels"""
 
@@ -110,7 +143,22 @@ class GuildInitiation(commands.Cog):
                                                         get_role(ctx, 'Participant'): cannot_see,
                                                         get_role(ctx, 'mod'): can_see_and_write},
                                             category=ctx.guild.categories[4])
-        await ctx.send("```This guild is setup```")
+        await ctx.send('```Channels Created```')
+
+    @commands.command()
+    async def distribute_role(self, ctx, role_name):
+        """Allows the role of spectator to be distributed to everyone else in the server"""
+
+        #  Distribute roles
+        role = get_role(ctx, role_name)
+        for member in ctx.guild.members:
+            if 'mod' in [role.name for role in member.roles]:
+                pass
+            else:
+                await member.add_roles(role)
+        else:
+            pass
+        await asyncio.sleep(1)
 
     @commands.command(name='setup')  # DO NOT USE THIS COMMAND YET
     @is_mod()
@@ -126,58 +174,53 @@ class GuildInitiation(commands.Cog):
                 await ctx.send('```Guild Directory could not be created```')
 
             #  Create Rolls
+            await ctx.invoke(self.bot.get_command('create_roles'))
             await asyncio.sleep(1)
-            await ctx.send('```Creating Rolls```')
-            await ctx.guild.create_role(name='Dreader', permissions=no_permissions, hoist=True,
-                                        color=discord.Colour.gold(), mentionable=True)
-            await ctx.guild.create_role(name='Veto Power', permissions=no_permissions,
-                                        color=discord.Colour.green(), mentionable=True)
-            await ctx.guild.create_role(name='Follower', permissions=no_permissions,
-                                        color=discord.Colour.blue(), mentionable=True)
-            n = 1
-            while n <= 20:
-                await ctx.guild.create_role(name=f'{n}', permissions=no_permissions, mentionable=False)
-                n += 1
-
-            await ctx.guild.create_role(name='Participant', permissions=participant_permissions,
-                                        hoist=True, mentionable=True)
-            await ctx.guild.create_role(name='Spectator', permissions=spectator_permissions,
-                                        hoist=True, mentionable=True)
 
             #  Create Categories
-            await ctx.send('```Creating Categories for Channels```')
-            await ctx.guild.create_category('Information', position=1)
-            await ctx.guild.create_category('Game Channels', position=2)
-
-            await ctx.guild.create_category('Moderation', position=5)
-
-            await ctx.guild.create_category('Confession Dial', position=3)
-            await ctx.guild.create_category('Private Conversations', position=4)
-
+            await ctx.invoke(self.bot.get_command('create_categories'))
             await asyncio.sleep(1)
 
-            await ctx.invoke(self.create_channels())
-            await ctx.send('```Initial Setup Complete, please type .create_channels next```')
+            #  Create Channels
+            await ctx.invoke(self.bot.get_command('create_channels'))
+            await asyncio.sleep(1)
+
+            #  Distributing Roles
+            await ctx.invoke(self.bot.get_command('distribute_role'), role_name='Spectator')
+            await asyncio.sleep(1)
+
+            await ctx.send("```This guild is setup```")
 
         else:
             await ctx.send('```This server cannot be setup```')
 
-    @commands.Cog.listener()
-    async def on_guild_role_create(self, role):
-        """Allows the role of spectator to be distributed to everyone else in the server"""
-
-        #  Distribute roles
-        if role.name == 'Spectator':
-            for member in role.guild.members:
-                if 'mod' in [role.name for role in member.roles]:
-                    pass
-                else:
-                    await member.add_roles(role)
-        else:
-            pass
-        await asyncio.sleep(1)
-
-    @commands.command(name='give')
-    async def give_roll(self, ctx, *members: discord.Member):
+    @commands.command(name='players')
+    @is_mod()
+    async def player(self, ctx, *members_tuple: discord.Member):
+        data = []
+        members = list(members_tuple)
+        numbers = [str(n) for n in range(1, len(members) + 1)]
         for member in members:
-            await member.add_roles(get_role(ctx, 'Participant'))
+            member_number = numbers[np.random.randint(0, len(numbers))]
+            numbers.remove(member_number)
+            await member.remove_roles(get_role(ctx, 'Spectator'))
+            await member.add_roles(get_role(ctx, 'Participant'),
+                                   get_role(ctx, member_number))
+            data.append([member_number, str(member.mention), '10', '0'])
+        df = pd.DataFrame(data=data, columns=['Number', 'Participant', 'Hate', 'Fandom'])
+        df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv')
+        for role in ctx.guild.roles:
+            try:
+                number = int(role.name)
+                if number > len(members):
+                    await role.delete()
+                else:
+                    await ctx.guild.create_text_channel(name=f'{number}',
+                                                        overwrites={get_role(ctx, f'{number}'): can_see_and_write,
+                                                                    get_role(ctx, 'Participant'): cannot_see,
+                                                                    get_role(ctx, 'Spectator'): can_read},
+                                                        category=ctx.guild.categories[2])
+            except ValueError:
+                pass
+
+        await ctx.send('``` Roles Distributed ```')
