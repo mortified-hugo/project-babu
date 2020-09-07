@@ -141,6 +141,8 @@ class GuildInitiation(commands.Cog):
             pass
         await asyncio.sleep(1)
 
+    @commands.command(name='create_channels')
+    @is_mod()
     async def create_channels(self, ctx):
         """Setup command for creating the channels"""
 
