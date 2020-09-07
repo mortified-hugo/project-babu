@@ -16,6 +16,8 @@ class GuildInitiation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    #  Utility commands
+
     @commands.command(name='guild_pattern')
     @template_server()
     async def create_guild_pattern(self, ctx):
@@ -25,6 +27,22 @@ class GuildInitiation(commands.Cog):
             code = str(gen_checker(guild_info(ctx)))
             file.write(code)
         await ctx.send('Pattern overridden')
+
+    @commands.command(name='reset_guild')
+    @is_mod()
+    async def reset_server(self, ctx):
+        os.rmdir(f'guilds/{ctx.guild.name}')
+        for channel in ctx.guild.channels:
+            if channel.name != 'entrance':
+                await channel.delete()
+            else:
+                pass
+        for role in ctx.guild.roles:
+            if role.name != 'mod' and role.name != self.bot.user.name and role.name != '@everyone':
+                await role.delete()
+            else:
+                pass
+        await ctx.send('```Guild reset```')
 
     @commands.command(name='get_template')
     async def print_template(self, ctx):
@@ -47,6 +65,17 @@ class GuildInitiation(commands.Cog):
             response = '```This server cannot be used to play.\n' \
                        'Please check the rules on how to organize your server for the game```'
         await ctx.send(str(response))
+
+    @commands.command(name='test_roles')
+    async def test_roles(self, ctx):
+        participant = get_role(ctx, 'Participant')
+        spectator = get_role(ctx, "Spectator")
+        follower = get_role(ctx, 'Follower')
+        mod = get_role(ctx, 'mod')
+        dreader = get_role(ctx, 'Dreader')
+        print(participant.name, spectator.name, follower.name, mod.name, dreader.name)
+
+    #  Setup Commands
 
     @commands.command(name='setup')  # DO NOT USE THIS COMMAND YET
     @is_mod()
@@ -84,9 +113,12 @@ class GuildInitiation(commands.Cog):
             await ctx.send('```Creating Categories for Channels```')
             await ctx.guild.create_category('Information', position=1)
             await ctx.guild.create_category('Game Channels', position=2)
+
+            await ctx.guild.create_category('Moderation', position=5)
+
             await ctx.guild.create_category('Confession Dial', position=3)
             await ctx.guild.create_category('Private Conversations', position=4)
-            await ctx.guild.create_category('Moderation', position=5)
+
             await asyncio.sleep(1)
 
             await ctx.send('```Initial Setup Complete, please type .create_channels next```')
@@ -109,8 +141,6 @@ class GuildInitiation(commands.Cog):
             pass
         await asyncio.sleep(1)
 
-    @commands.command(name='create_channels')
-    @is_mod()
     async def create_channels(self, ctx):
         """Setup command for creating the channels"""
 
@@ -143,15 +173,6 @@ class GuildInitiation(commands.Cog):
                                                         get_role(ctx, 'mod'): can_see_and_write},
                                             category=ctx.guild.categories[4])
         await ctx.send("```This guild is setup```")
-
-    @commands.command(name='test_roles')
-    async def test_roles(self, ctx):
-        participant = get_role(ctx, 'Participant')
-        spectator = get_role(ctx, "Spectator")
-        follower = get_role(ctx, 'Follower')
-        mod = get_role(ctx, 'mod')
-        dreader = get_role(ctx, 'Dreader')
-        print(participant.name, spectator.name, follower.name, mod.name, dreader.name)
 
     @commands.command(name='give')
     async def give_roll(self, ctx, *members: discord.Member):
