@@ -10,14 +10,14 @@ def concatenate_list_data(input_list):
     return output_str
 
 
-def guild_info(ctx):
+def guild_info(guild):
     """Creates a reference list for contents of a guild that need to be checked
 
-    :param ctx: context of command in discord
+    :param guild: context of command in discord
 
     :return: list of channels and roles"""
-    channels = [channel.name for channel in ctx.guild.channels]
-    roles = [role.name for role in ctx.guild.roles]
+    channels = [channel.name for channel in guild.channels]
+    roles = [role.name for role in guild.roles]
     return channels + roles
 
 
@@ -32,12 +32,12 @@ def gen_checker(discord_info):
     return int(info_dump, 36) * 101279  # Babu's birthday
 
 
-def check_guild(ctx):
+def check_guild(guild):
     """Checks if guild is an appropriate server to start playing according to the rules
-    :param ctx: discord context
+    :param guild: discord context
 
     :return: bool for the check"""
-    guild_code = str(gen_checker(guild_info(ctx)))
+    guild_code = str(gen_checker(guild_info(guild)))
     with open('guild_check.txt', mode='r') as file:
         correct_code = str(file.read())
     return correct_code == guild_code

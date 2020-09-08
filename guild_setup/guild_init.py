@@ -19,6 +19,16 @@ class GuildInitiation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild: discord.Guild):
+        if check_guild(guild):
+            #  Creating Directory
+            path = f'guilds/{guild.name}'
+            try:
+                os.mkdir(path)
+            except OSError:
+                await guild.channels[0].send('```Guild Directory could not be created```')
+
     #  Utility commands
 
     @commands.Cog.listener()
@@ -68,7 +78,7 @@ class GuildInitiation(commands.Cog):
 
         :return: response to context whether the guild is appropriate to play"""
 
-        checker = check_guild(ctx)
+        checker = check_guild(ctx.guild)
         if checker:
             response = '```This server can be used to play```'
         else:
@@ -87,8 +97,8 @@ class GuildInitiation(commands.Cog):
 
     #  Setup Commands
 
-    @commands.command(name='create_roles')
-    async def create_roles(self, ctx):
+    @commands.command()
+    async def _create_roles(self, ctx):
         await asyncio.sleep(1)
         await ctx.send('```Creating Rolls```')
         await ctx.guild.create_role(name='Dreader', permissions=no_permissions, hoist=True,
@@ -107,9 +117,8 @@ class GuildInitiation(commands.Cog):
         await ctx.guild.create_role(name='Spectator', permissions=spectator_permissions,
                                     hoist=True, mentionable=True)
 
-    @commands.command(name='create_categories')
-    async def create_categories(self, ctx):
-        """Creates the necessary categories"""
+    @commands.command()
+    async def _create_categories(self, ctx):
 
         await ctx.send('```Creating Categories for Channels```')
         await ctx.guild.create_category('Information', position=1)
@@ -119,9 +128,8 @@ class GuildInitiation(commands.Cog):
         await ctx.guild.create_category('Confession Dial', position=3)
         await ctx.guild.create_category('Private Conversations', position=4)
 
-    @commands.command(name='create_channels')
-    async def create_channels(self, ctx):
-        """Setup command for creating the channels"""
+    @commands.command()
+    async def _create_channels(self, ctx):
 
         await ctx.send('```Creating Text Channels```')
         await ctx.guild.create_text_channel(name='spectator-hub',
@@ -159,8 +167,7 @@ class GuildInitiation(commands.Cog):
         await ctx.send('```Channels Created```')
 
     @commands.command()
-    async def distribute_role(self, ctx, role_name):
-        """Allows the role of spectator to be distributed to everyone else in the server"""
+    async def _distribute_role(self, ctx, role_name):
 
         #  Distribute roles
         role = get_role(ctx, role_name)
@@ -173,12 +180,17 @@ class GuildInitiation(commands.Cog):
             pass
         await asyncio.sleep(1)
 
-    @commands.command(name='setup')  # DO NOT USE THIS COMMAND YET
+    @commands.command(name='setup')
     @is_mod()
     async def guild_setup(self, ctx):
-        """Initiates guild setup, creating the basic roles and channels to play the game"""
+        """Initiates guild setup, creating the basic roles and channels to play the game
 
-        if check_guild(ctx):
+        It will invoke a series of internal commands to create the necessary roles, channels and categories for a guild
+        This command will only work in guilds which follow the specified template
+        """
+
+        if check_guild(ctx.guild):
+
             #  Creating Directory
             path = f'guilds/{ctx.guild.name}'
             try:
@@ -187,19 +199,19 @@ class GuildInitiation(commands.Cog):
                 await ctx.send('```Guild Directory could not be created```')
 
             #  Create Rolls
-            await ctx.invoke(self.bot.get_command('create_roles'))
+            await ctx.invoke(self.bot.get_command('_create_roles'))
             await asyncio.sleep(1)
 
             #  Create Categories
-            await ctx.invoke(self.bot.get_command('create_categories'))
+            await ctx.invoke(self.bot.get_command('_create_categories'))
             await asyncio.sleep(1)
 
             #  Create Channels
-            await ctx.invoke(self.bot.get_command('create_channels'))
+            await ctx.invoke(self.bot.get_command('_create_channels'))
             await asyncio.sleep(1)
 
             #  Distributing Roles
-            await ctx.invoke(self.bot.get_command('distribute_role'), role_name='Spectator')
+            await ctx.invoke(self.bot.get_command('_distribute_role'), role_name='Spectator')
             await asyncio.sleep(1)
 
             await ctx.send("```This guild is setup```")
