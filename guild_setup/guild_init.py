@@ -206,7 +206,7 @@ class GuildInitiation(commands.Cog):
             await member.remove_roles(get_role(ctx, 'Spectator'))
             await member.add_roles(get_role(ctx, 'Participant'),
                                    get_role(ctx, member_number))
-            data.append([member_number, str(member.mention), '10', '0'])
+            data.append([member_number, str(member.display_name), '10', '0'])
         df = pd.DataFrame(data=data, columns=['Number', 'Participant', 'Hate', 'Fandom'])
         df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv')
         for role in ctx.guild.roles:
