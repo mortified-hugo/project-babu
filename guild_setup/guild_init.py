@@ -233,9 +233,7 @@ class GuildInitiation(commands.Cog):
                                    get_role(ctx, member_number))
             data.append([member_number, str(member.display_name), '10', '0'])
         df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom'])
-        print(df)
         sorted_df = df.sort_values('number', axis=0, ascending=True)
-        print(sorted_df)
         sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
         for role in ctx.guild.roles:
             try:
