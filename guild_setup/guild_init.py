@@ -34,7 +34,7 @@ class GuildInitiation(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         try:
-            await member.add_roles(member, 'Spectator')
+            await member.add_roles(get_role(member, 'Spectator'))
         except AttributeError:
             pass
 
