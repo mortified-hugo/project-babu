@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 import os
+import shutil
 import asyncio
 import numpy as np
 import pandas as pd
@@ -20,6 +21,13 @@ class GuildInitiation(commands.Cog):
 
     #  Utility commands
 
+    @commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member):
+        try:
+            await member.add_roles(member, 'Spectator')
+        except AttributeError:
+            pass
+
     @commands.command(name='guild_pattern')
     @template_server()
     async def create_guild_pattern(self, ctx):
@@ -33,7 +41,7 @@ class GuildInitiation(commands.Cog):
     @commands.command(name='reset_guild')
     @is_mod()
     async def reset_server(self, ctx):
-        os.rmdir(f'guilds/{ctx.guild.name}')
+        shutil.rmtree(f'guilds/{ctx.guild.name}')
         for channel in ctx.guild.channels:
             if channel.name != 'entrance':
                 await channel.delete()
@@ -143,6 +151,11 @@ class GuildInitiation(commands.Cog):
                                                         get_role(ctx, 'Participant'): cannot_see,
                                                         get_role(ctx, 'mod'): can_see_and_write},
                                             category=ctx.guild.categories[4])
+        await ctx.guild.create_text_channel(name='commands',
+                                            overwrites={get_role(ctx, 'Spectator'): cannot_see,
+                                                        get_role(ctx, 'Participant'): cannot_see,
+                                                        get_role(ctx, 'mod'): can_see_and_write},
+                                            category=ctx.guild.categories[4])
         await ctx.send('```Channels Created```')
 
     @commands.command()
@@ -207,8 +220,11 @@ class GuildInitiation(commands.Cog):
             await member.add_roles(get_role(ctx, 'Participant'),
                                    get_role(ctx, member_number))
             data.append([member_number, str(member.display_name), '10', '0'])
-        df = pd.DataFrame(data=data, columns=['Number', 'Participant', 'Hate', 'Fandom'])
-        df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv')
+        df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom'])
+        print(df)
+        sorted_df = df.sort_values('number', axis=0, ascending=True)
+        print(sorted_df)
+        sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
         for role in ctx.guild.roles:
             try:
                 number = int(role.name)

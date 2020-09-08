@@ -1,5 +1,6 @@
 import os
 from discord.ext import commands
+import discord
 from dotenv import load_dotenv
 
 from guild_setup.guild_init import GuildInitiation
@@ -17,6 +18,13 @@ async def on_ready():
 
     print(f'{bot.user.name} has connected to Discord!')
     print(f'This bot is currently on {len(bot.guilds)} guilds')
+
+
+@bot.event
+async def on_guild_join(guild: discord.Guild):
+    with open('hail.txt') as file:
+        response = file.read()
+    await guild.channels[0].send(response)
 
 
 @bot.command(name='get_id')
