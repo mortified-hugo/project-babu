@@ -90,7 +90,7 @@ class GuildInitiation(commands.Cog):
         await ctx.guild.create_role(name='Follower', permissions=no_permissions,
                                     color=discord.Colour.blue(), mentionable=True)
         n = 1
-        while n <= 5:
+        while n <= 8:
             await ctx.guild.create_role(name=f'{n}', permissions=no_permissions, mentionable=False)
             n += 1
 
@@ -222,5 +222,17 @@ class GuildInitiation(commands.Cog):
                                                         category=ctx.guild.categories[2])
             except ValueError:
                 pass
+        n = 1
+        while n <= len(members) - 1:
+            m = n + 1
+            while m <= len(members):
+                await ctx.guild.create_text_channel(name=f'{n} and {m}',
+                                                    overwrites={get_role(ctx, f'{n}'): can_see_and_write,
+                                                                get_role(ctx, f'{m}'): can_see_and_write,
+                                                                get_role(ctx, 'Participant'): cannot_see,
+                                                                get_role(ctx, 'Spectator'): can_read},
+                                                    category=ctx.guild.categories[3])
+                m += 1
+            n += 1
 
         await ctx.send('``` Roles Distributed ```')
