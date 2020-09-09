@@ -106,7 +106,7 @@ class GuildInitiation(commands.Cog):
         await ctx.guild.create_role(name='Follower', permissions=no_permissions,
                                     color=discord.Colour.blue(), mentionable=True)
         n = 1
-        while n <= 8:
+        while n <= 12:
             await ctx.guild.create_role(name=f'{n}', permissions=no_permissions, mentionable=False)
             n += 1
 
