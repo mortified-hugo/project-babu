@@ -13,6 +13,7 @@ class GameCommands(commands.Cog):
     @commands.command()
     @is_mod()
     async def add_hate(self, ctx, player: discord.Member, hate_change: int):
+        """Allow mods to alter the hate value of a player"""
         player_name = str(player.display_name)
         alter_variable('hate', player_name, ctx.guild, hate_change)
         await ctx.send(f'{player_name} had their hate changed by {hate_change}')
