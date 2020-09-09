@@ -51,7 +51,3 @@ class GameCommands(commands.Cog):
                         line = '~' + line + '~'
                     response = response + line + '\n'
         await ctx.send(response)
-
-
-
-
