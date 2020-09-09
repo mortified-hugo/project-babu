@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def concatenate_list_data(input_list):
     """Creates a single string from every element of a list
 
@@ -73,3 +76,20 @@ def get_category(ctx, category_name):
         else:
             pass
     return desired_category
+
+
+def alter_variable(variable, name, guild, n):
+    """Changes the variable parameter of a player in the csv file
+
+    :param variable: either 'hate' or 'fandom'
+    :param name: name of the player
+    :param guild: guild of the player
+    :param n: a positive or negative int to alter the variable
+
+    :returns the corrected csv.
+    """
+    path = f'guilds/{guild.name}/hate-fandom.csv'
+    df = pd.read_csv(path, index_col='participant')
+    df.loc[name, variable] += n
+    df.to_csv(path)
+

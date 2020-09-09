@@ -20,3 +20,13 @@ def is_mod():
         return 'mod' in role_names
 
     return commands.check(predicate)
+
+
+def game_has_not_started():
+    """Definition of a game yet to start"""
+
+    def predicate(ctx):
+        text_channels = [text_channel.name for text_channel in ctx.guild.text_channels]
+        return '1' not in text_channels
+
+    return commands.check(predicate)

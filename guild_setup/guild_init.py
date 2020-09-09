@@ -1,13 +1,11 @@
-from discord.ext import commands
-import discord
 import os
 import shutil
 import asyncio
 import numpy as np
 import pandas as pd
 
-from guild_setup.functions import *
-from guild_setup.checks import *
+from functions import *
+from checks import *
 from guild_setup.roles_and_permissions import *
 
 
@@ -221,44 +219,55 @@ class GuildInitiation(commands.Cog):
 
     @commands.command(name='players')
     @is_mod()
+    @game_has_not_started()
     async def player(self, ctx, *members_tuple: discord.Member):
-        data = []
-        members = list(members_tuple)
-        numbers = [str(n) for n in range(1, len(members) + 1)]
-        for member in members:
-            member_number = numbers[np.random.randint(0, len(numbers))]
-            numbers.remove(member_number)
-            await member.remove_roles(get_role(ctx, 'Spectator'))
-            await member.add_roles(get_role(ctx, 'Participant'),
-                                   get_role(ctx, member_number))
-            data.append([member_number, str(member.display_name), '10', '0'])
-        df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom'])
-        sorted_df = df.sort_values('number', axis=0, ascending=True)
-        sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
-        for role in ctx.guild.roles:
-            try:
-                number = int(role.name)
-                if number > len(members):
-                    await role.delete()
-                else:
-                    await ctx.guild.create_text_channel(name=f'{number}',
-                                                        overwrites={get_role(ctx, f'{number}'): can_see_and_write,
+        """Add players to the game. This command should only be invoked once
+
+        :param ctx: discord context.
+        :param members_tuple: a list of members that will become players. All members in this list will be assigned
+        a number and will be designated a participant of the game
+
+        :returns: configures the guild according the list of players"""
+        if len(members_tuple) >= 5:
+            data = []
+            members = list(members_tuple)
+            numbers = [str(n) for n in range(1, len(members) + 1)]
+            for member in members:
+                member_number = numbers[np.random.randint(0, len(numbers))]
+                numbers.remove(member_number)
+                await member.remove_roles(get_role(ctx, 'Spectator'))
+                await member.add_roles(get_role(ctx, 'Participant'),
+                                       get_role(ctx, member_number))
+                data.append([member_number, str(member.display_name), '10', '0'])
+            df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom'])
+            sorted_df = df.sort_values('number', axis=0, ascending=True)
+            sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
+            for role in ctx.guild.roles:
+                try:
+                    number = int(role.name)
+                    if number > len(members):
+                        await role.delete()
+                    else:
+                        await ctx.guild.create_text_channel(name=f'{number}',
+                                                            overwrites={get_role(ctx, f'{number}'): can_see_and_write,
+                                                                        get_role(ctx, 'Participant'): cannot_see,
+                                                                        get_role(ctx, 'Spectator'): can_read},
+                                                            category=ctx.guild.categories[2])
+                except ValueError:
+                    pass
+            n = 1
+            while n <= len(members) - 1:
+                m = n + 1
+                while m <= len(members):
+                    await ctx.guild.create_text_channel(name=f'{n} and {m}',
+                                                        overwrites={get_role(ctx, f'{n}'): can_see_and_write,
+                                                                    get_role(ctx, f'{m}'): can_see_and_write,
                                                                     get_role(ctx, 'Participant'): cannot_see,
                                                                     get_role(ctx, 'Spectator'): can_read},
-                                                        category=ctx.guild.categories[2])
-            except ValueError:
-                pass
-        n = 1
-        while n <= len(members) - 1:
-            m = n + 1
-            while m <= len(members):
-                await ctx.guild.create_text_channel(name=f'{n} and {m}',
-                                                    overwrites={get_role(ctx, f'{n}'): can_see_and_write,
-                                                                get_role(ctx, f'{m}'): can_see_and_write,
-                                                                get_role(ctx, 'Participant'): cannot_see,
-                                                                get_role(ctx, 'Spectator'): can_read},
-                                                    category=ctx.guild.categories[3])
-                m += 1
-            n += 1
+                                                        category=ctx.guild.categories[3])
+                    m += 1
+                n += 1
 
-        await ctx.send('``` Roles Distributed ```')
+            await ctx.send('``` Roles Distributed ```')
+        else:
+            await ctx.send('``` Too few players, please add at least 5 ```')

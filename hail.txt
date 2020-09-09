@@ -2,8 +2,9 @@ Hello There!
 
 I am Bubu! Nice of you to invite me to you server.
 
-If you want to play our game, please, use ".check_guild" to verify if this server is capable of initalizing the game.
+> If you want to play our game, please, use ".check_guild" to verify if this server is capable of initalizing the game.
 
-If not, please use the link in ".get_template" to create a server that can!
+> If not, please use the link in ".get_template" to create a server that can!
 
-If this server can run the game, please add all your friends here and start up with ".setup"! Good luck!
+> If this server can run the game, please add all your friends here, give your self the "mod" role
+and start up with ".setup"! Good luck! :smile:

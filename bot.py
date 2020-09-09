@@ -4,6 +4,7 @@ import discord
 from dotenv import load_dotenv
 
 from guild_setup.guild_init import GuildInitiation
+from game_commands.game_commands import GameCommands
 
 
 load_dotenv()
@@ -32,4 +33,5 @@ async def get_id(ctx):
     await ctx.send(ctx.guild.id)
 
 bot.add_cog(GuildInitiation(bot))
+bot.add_cog(GameCommands(bot))
 bot.run(TOKEN)
