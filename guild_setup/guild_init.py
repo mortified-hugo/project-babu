@@ -238,8 +238,8 @@ class GuildInitiation(commands.Cog):
                 await member.remove_roles(get_role(ctx, 'Spectator'))
                 await member.add_roles(get_role(ctx, 'Participant'),
                                        get_role(ctx, member_number))
-                data.append([member_number, str(member.display_name), '10', '0'])
-            df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom'])
+                data.append([member_number, str(member.nick), '10', '0', 'True'])
+            df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom', 'active'])
             sorted_df = df.sort_values('number', axis=0, ascending=True)
             sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
             for role in ctx.guild.roles:
