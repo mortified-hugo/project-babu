@@ -93,15 +93,8 @@ def create_hate_fandom_csv(data, ctx):
     sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
 
 
-#def create_abilities_csv(data, ctx):
-    #"""Creates a hate-fandom.csv file with the data from the players for a guild
-#
- #   :param data: player data, in this case a list of lists
-  #  :param ctx: ctx for guild name
-   # """
-    #df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom', 'active', 'emoji'])
-    #sorted_df = df.sort_values('number', axis=0, ascending=True)
-    #sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
+def create_abilities_csv():  # PENDING GAME DECISIONS ON HOW THE MINIGAMES WILL WORK
+    pass
 
 
 def alter_variable(variable, name, guild, n):
@@ -130,4 +123,3 @@ def get_player(number, guild):
     path = f'guilds/{guild.name}/hate-fandom.csv'
     df = pd.read_csv(path, index_col='number')
     return df.loc[number, 'participant']
-
