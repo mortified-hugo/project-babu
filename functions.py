@@ -1,6 +1,7 @@
 import pandas as pd
 
 
+#  General Purpose Functions
 def concatenate_list_data(input_list):
     """Creates a single string from every element of a list
 
@@ -13,6 +14,7 @@ def concatenate_list_data(input_list):
     return output_str
 
 
+#  Guild Check Functions
 def guild_info(guild):
     """Creates a reference list for contents of a guild that need to be checked
 
@@ -46,6 +48,7 @@ def check_guild(guild):
     return correct_code == guild_code
 
 
+#  Get Discord Objects Functions
 def get_role(ctx, role_name):
     """Returns the role object based on the role name
 
@@ -78,6 +81,29 @@ def get_category(ctx, category_name):
     return desired_category
 
 
+#  CSV/Data Frame Manipulation Functions
+def create_hate_fandom_csv(data, ctx):
+    """Creates a hate-fandom.csv file with the data from the players for a guild
+
+    :param data: player data, in this case a list of lists
+    :param ctx: ctx for guild name
+    """
+    df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom', 'active', 'emoji'])
+    sorted_df = df.sort_values('number', axis=0, ascending=True)
+    sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
+
+
+#def create_abilities_csv(data, ctx):
+    #"""Creates a hate-fandom.csv file with the data from the players for a guild
+#
+ #   :param data: player data, in this case a list of lists
+  #  :param ctx: ctx for guild name
+   # """
+    #df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom', 'active', 'emoji'])
+    #sorted_df = df.sort_values('number', axis=0, ascending=True)
+    #sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
+
+
 def alter_variable(variable, name, guild, n):
     """Changes the variable parameter of a player in the csv file
 
@@ -92,4 +118,16 @@ def alter_variable(variable, name, guild, n):
     df = pd.read_csv(path, index_col='participant')
     df.loc[name, variable] += n
     df.to_csv(path)
+
+
+def get_player(number, guild):
+    """Gets the player name from their number
+
+    :param number: player number, str
+    :param guild: players guild
+
+    :returns player name: str"""
+    path = f'guilds/{guild.name}/hate-fandom.csv'
+    df = pd.read_csv(path, index_col='number')
+    return df.loc[number, 'participant']
 

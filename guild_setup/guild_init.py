@@ -86,6 +86,8 @@ class GuildInitiation(commands.Cog):
 
     @commands.command(name='test_roles')
     async def test_roles(self, ctx):
+        """Testing for the role creation, console only"""
+
         participant = get_role(ctx, 'Participant')
         spectator = get_role(ctx, "Spectator")
         follower = get_role(ctx, 'Follower')
@@ -217,10 +219,20 @@ class GuildInitiation(commands.Cog):
         else:
             await ctx.send('```This server cannot be setup```')
 
+    @commands.command()
+    async def _send_welcome_message(self, ctx):
+        for channel in ctx.guild.text_channels:
+            try:
+                number = int(channel.name)
+                message = f'Welcome {get_player(number, ctx.guild)}!'
+                await channel.send(message)
+            except ValueError:
+                pass
+
     @commands.command(name='players')
     @is_mod()
     @game_has_not_started()
-    async def player(self, ctx, *members_tuple: discord.Member):
+    async def players(self, ctx, *members_tuple: discord.Member):
         """Add players to the game. This command should only be invoked once
 
         :param ctx: discord context.
@@ -229,6 +241,8 @@ class GuildInitiation(commands.Cog):
 
         :returns: configures the guild according the list of players"""
         if len(members_tuple) >= 5:
+
+            #  Generate Player Data
             data = []
             members = list(members_tuple)
             numbers = [str(n) for n in range(1, len(members) + 1)]
@@ -238,10 +252,8 @@ class GuildInitiation(commands.Cog):
                 await member.remove_roles(get_role(ctx, 'Spectator'))
                 await member.add_roles(get_role(ctx, 'Participant'),
                                        get_role(ctx, member_number))
-                data.append([member_number, str(member.nick), '10', '0', 'True'])
-            df = pd.DataFrame(data=data, columns=['number', 'participant', 'hate', 'fandom', 'active'])
-            sorted_df = df.sort_values('number', axis=0, ascending=True)
-            sorted_df.to_csv(f'guilds/{ctx.guild.name}/hate-fandom.csv', index=False)
+                data.append([member_number, str(member.display_name), '10', '0', 'True', 'None'])
+            create_hate_fandom_csv(data, ctx)
             for role in ctx.guild.roles:
                 try:
                     number = int(role.name)
@@ -268,6 +280,7 @@ class GuildInitiation(commands.Cog):
                     m += 1
                 n += 1
 
+            await ctx.invoke(self.bot.get_command('_send_welcome_message'))
             await ctx.send('``` Roles Distributed ```')
         else:
             await ctx.send('``` Too few players, please add at least 5 ```')

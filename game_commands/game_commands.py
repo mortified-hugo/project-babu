@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import csv
 
 from checks import *
@@ -40,6 +40,7 @@ class GameCommands(commands.Cog):
 
     @commands.command()
     async def list_players(self, ctx):
+        """Lists the players, including those who already lost the game"""
         response = ''
         with open(f'guilds/{ctx.guild.name}/hate-fandom.csv') as file:
             for row in csv.reader(file):
@@ -51,3 +52,6 @@ class GameCommands(commands.Cog):
                         line = '~' + line + '~'
                     response = response + line + '\n'
         await ctx.send(response)
+
+
+    #  Player Commands
