@@ -123,3 +123,10 @@ def get_player(number, guild):
     path = f'guilds/{guild.name}/hate-fandom.csv'
     df = pd.read_csv(path, index_col='number')
     return df.loc[number, 'participant']
+
+
+def save_emoji(name, guild, emoji):
+    path = f'guilds/{guild.name}/hate-fandom.csv'
+    df = pd.read_csv(path, index_col='participant')
+    df.loc[name, 'emoji'] = emoji.name
+    df.to_csv(path)

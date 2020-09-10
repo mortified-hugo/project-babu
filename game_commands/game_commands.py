@@ -47,11 +47,19 @@ class GameCommands(commands.Cog):
                 if row[0] == 'participant':
                     pass
                 else:
-                    line = f"{row[1]} - {row[0]}"
+                    line = f"{row[1]} - {row[0]} {row[5]}"
                     if row[4] == 'False':
                         line = '~' + line + '~'
                     response = response + line + '\n'
         await ctx.send(response)
 
-
     #  Player Commands
+    @commands.command()
+    @is_player()
+    async def emoji(self, ctx, emoji: discord.Emoji):
+        if ctx.channel.category.name == 'Confession Dial':
+            save_emoji(ctx.user.name, ctx.guild, emoji)
+            ctx.send('Emoji saved')
+        else:
+            ctx.send('You have to do that in your space :(')
+
