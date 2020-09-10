@@ -22,6 +22,8 @@ class GameCommands(commands.Cog):
         try:
             alter_variable('hate', player_name, ctx.guild, hate_change)
             await ctx.send(f'{player_name} had their hate changed by {hate_change}')
+            feed = get_channel(ctx, 'feed')
+            await feed.send(f'{player.mention} displeased the Overseer')
         except KeyError:
             await ctx.send('No player of that name found')
 
@@ -29,10 +31,12 @@ class GameCommands(commands.Cog):
     @is_mod()
     async def add_fandom(self, ctx, player: discord.Member, fandom_change: int):
         """Allow mods to alter the fandom value of a player"""
-        player_name = str(player.nick)
+        player_name = str(player.display_name)
         try:
             alter_variable('fandom', player_name, ctx.guild, fandom_change)
             await ctx.send(f'{player_name} had their fandom changed by {fandom_change}')
+            feed = get_channel(ctx, 'feed')
+            await feed.send(f'{player.mention} pleased the Overseer')
         except KeyError:
             await ctx.send('No player of that name found')
 
@@ -56,10 +60,9 @@ class GameCommands(commands.Cog):
     #  Player Commands
     @commands.command()
     @is_player()
-    async def emoji(self, ctx, emoji: discord.Emoji):
+    async def emoji(self, ctx, emoji: discord.Emoji):  # COMMAND BROKEN (CONSULT APERTURE)
         if ctx.channel.category.name == 'Confession Dial':
             save_emoji(ctx.user.name, ctx.guild, emoji)
             ctx.send('Emoji saved')
         else:
             ctx.send('You have to do that in your space :(')
-

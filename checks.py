@@ -25,7 +25,7 @@ def is_mod():
 
 
 def is_player():
-    """Definition of a moderator"""
+    """Definition of a player"""
 
     def predicate(ctx):
         role_names = [role.name for role in ctx.author.roles]

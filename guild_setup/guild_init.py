@@ -62,6 +62,24 @@ class GuildInitiation(commands.Cog):
                 pass
         await ctx.send('```Guild reset```')
 
+    @commands.command()
+    @is_mod()
+    async def reset_players(self, ctx):
+        for channel in ctx.guild.channels:
+            if channel.category is None:
+                pass
+            elif channel.category.name == 'Confession Dial' or channel.category.name == 'Private Conversations':
+                await channel.delete()
+            else:
+                pass
+        for member in ctx.guild.members:
+            if get_role(ctx, 'Participant') in member.roles:
+                await member.remove_roles(*[role for role in member.roles if role.name != '@everyone'])
+                await member.add_roles(get_role(ctx, 'Spectator'))
+            else:
+                pass
+        await ctx.send('Players Reset')
+
     @commands.command(name='get_template')
     async def print_template(self, ctx):
         """Generates template link"""
@@ -96,6 +114,11 @@ class GuildInitiation(commands.Cog):
         print(participant.name, spectator.name, follower.name, mod.name, dreader.name)
 
     #  Setup Commands
+    @commands.command()
+    async def _create_numbered_roles(self, ctx, n=1):
+        while n <= 12:  # NUMBER MUST BE CONFIGURABLE
+            await ctx.guild.create_role(name=f'{n}', permissions=no_permissions, mentionable=False)
+            n += 1
 
     @commands.command()
     async def _create_roles(self, ctx):
@@ -107,10 +130,8 @@ class GuildInitiation(commands.Cog):
                                     color=discord.Colour.green(), mentionable=True)
         await ctx.guild.create_role(name='Follower', permissions=no_permissions,
                                     color=discord.Colour.blue(), mentionable=True)
-        n = 1
-        while n <= 12:
-            await ctx.guild.create_role(name=f'{n}', permissions=no_permissions, mentionable=False)
-            n += 1
+
+        await ctx.invoke(self.bot.get_command('_create_numbered_roles'))
 
         await ctx.guild.create_role(name='Participant', permissions=participant_permissions,
                                     hoist=True, mentionable=True)
@@ -257,14 +278,14 @@ class GuildInitiation(commands.Cog):
             for role in ctx.guild.roles:
                 try:
                     number = int(role.name)
-                    if number > len(members):
-                        await role.delete()
-                    else:
+                    if number <= len(members):
                         await ctx.guild.create_text_channel(name=f'{number}',
                                                             overwrites={get_role(ctx, f'{number}'): can_see_and_write,
                                                                         get_role(ctx, 'Participant'): cannot_see,
                                                                         get_role(ctx, 'Spectator'): can_read},
                                                             category=ctx.guild.categories[2])
+                    else:
+                        pass
                 except ValueError:
                     pass
             n = 1

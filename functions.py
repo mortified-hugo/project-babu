@@ -81,6 +81,22 @@ def get_category(ctx, category_name):
     return desired_category
 
 
+def get_channel(ctx, channel_name):
+    """Returns the role object based on the role name
+
+    :param ctx: context of the discord guild
+    :param channel_name: str representing the discord role name
+
+    :return: discord.TextChannel Object"""
+    desired_channel = None
+    for channel in ctx.guild.text_channels:
+        if str(channel.name) == str(channel_name):
+            desired_channel = channel
+        else:
+            pass
+    return desired_channel
+
+
 #  CSV/Data Frame Manipulation Functions
 def create_hate_fandom_csv(data, ctx):
     """Creates a hate-fandom.csv file with the data from the players for a guild

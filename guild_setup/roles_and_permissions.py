@@ -3,12 +3,12 @@ import discord
 
 #  Spectator Role
 spectator_permissions = discord.Permissions(read_messages=True, read_message_history=True,
-                                            add_reactions=True, connect=True)
+                                            add_reactions=True, connect=True, change_nickname=True)
 
 #  Participant Role
 participant_permissions = discord.Permissions(read_messages=True, send_messages=True, embed_links=True,
                                               attach_files=True, read_message_history=True, add_reactions=True,
-                                              connect=True, mention_everyone=True)
+                                              connect=True, mention_everyone=True, change_nickname=True)
 
 #  No Special Permissions
 no_permissions = discord.Permissions()
