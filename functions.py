@@ -141,6 +141,28 @@ def get_player(number, guild):
     return df.loc[number, 'participant']
 
 
+def get_hate(name, guild):
+    """Returns the players hate
+    :param name: player name, discord.Member.display_name
+    :param guild: discord.Guild
+
+    :returns player hate: int"""
+    path = f'guilds/{guild.name}/hate-fandom.csv'
+    df = pd.read_csv(path, index_col='participant')
+    return int(df.loc[name, 'hate'])
+
+
+def get_fandom(name, guild):
+    """Returns the players hate
+    :param name: player name, discord.Member.display_name
+    :param guild: discord.Guild
+
+    :returns player fandom: int"""
+    path = f'guilds/{guild.name}/hate-fandom.csv'
+    df = pd.read_csv(path, index_col='participant')
+    return int(df.loc[name, 'fandom'])
+
+
 def save_emoji(name, guild, emoji):
     path = f'guilds/{guild.name}/hate-fandom.csv'
     df = pd.read_csv(path, index_col='participant')

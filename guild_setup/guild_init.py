@@ -2,7 +2,6 @@ import os
 import shutil
 import asyncio
 import numpy as np
-import pandas as pd
 
 from functions import *
 from checks import *
@@ -19,6 +18,8 @@ class GuildInitiation(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
+        """Creates folder for guild"""
+
         if check_guild(guild):
             #  Creating Directory
             path = f'guilds/{guild.name}'
@@ -26,6 +27,13 @@ class GuildInitiation(commands.Cog):
                 os.mkdir(path)
             except OSError:
                 await guild.channels[0].send('```Guild Directory could not be created```')
+
+    @commands.Cog.listener()
+    async def on_guild_leave(self, guild: discord.Guild):
+        """Deletes guild folder on guild leave"""
+
+        if check_guild(guild):
+            shutil.rmtree(f'guilds/{guild.name}')
 
     #  Utility commands
 
