@@ -1,4 +1,5 @@
 import pandas as pd
+import pickle
 
 
 #  General Purpose Functions
@@ -168,3 +169,25 @@ def save_emoji(name, guild, emoji):
     df = pd.read_csv(path, index_col='participant')
     df.loc[name, 'emoji'] = emoji.name
     df.to_csv(path)
+
+
+#  Pickle data storage and manipulation
+def save_variable(guild, variable, variable_name):
+    """Saves variable as a pickle file
+
+    :param guild: discord.Guild
+    :param variable: variable to be stored
+    :param variable_name: name in which variable will be stored"""
+    with open(f'guilds/{guild.name}/{variable_name}', mode='wb') as file:
+        pickle.dump(variable, file)
+
+
+def load_variable(guild, variable_name):
+    """Loads variable from pickle
+
+    :param guild: discord.Guild
+    :param variable_name: variable name to be loaded - str
+
+    :returns variable"""
+    with open(f'guilds/{guild.name}/{variable_name}', mode='rb') as file:
+        return pickle.load(file)

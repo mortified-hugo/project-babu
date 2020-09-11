@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 from guild_setup.guild_init import GuildInitiation
 from game_commands.game_commands import GameCommands
+from game_commands.elimination import EliminationContest
 
 
 load_dotenv()
@@ -34,4 +35,5 @@ async def get_id(ctx):
 
 bot.add_cog(GuildInitiation(bot))
 bot.add_cog(GameCommands(bot))
+bot.add_cog(EliminationContest(bot))
 bot.run(TOKEN)
