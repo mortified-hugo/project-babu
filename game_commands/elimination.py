@@ -1,8 +1,10 @@
 import pickle
 import discord
+from varname import nameof
+
 from checks import *
 from functions import *
-from varname import nameof
+from game_commands.Contestant import Contestant
 
 
 class EliminationContest(commands.Cog):
@@ -59,6 +61,12 @@ class EliminationContest(commands.Cog):
         await ctx.send("```list updated```")
 
     # ADD TRANSFORMATION INTO A PROPER LIST OF CONTESTANT OBJECTS
+    @commands.command()
+    async def _start_contest(self, ctx):
+        contestant_names = load_variable(ctx.guild, 'contestant_names')
+        on_the_hook = [Contestant(player, ctx.guild) for player in contestant_names]
+        save_variable(ctx.guild, on_the_hook, nameof(on_the_hook))
+
     # ADD ROUNDS
     # ADD COMMANDS FOR CONCLUDING THE ELIMINATION PROCESS
 

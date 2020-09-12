@@ -17,6 +17,5 @@ class Contestant:
         self.f = np.random.randint(1, 100)
         self.changed_attack = False
         self.vote = 0
-
-
+        self.percentage = 0
 
