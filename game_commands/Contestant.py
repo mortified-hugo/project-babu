@@ -1,4 +1,5 @@
 from functions import *
+import numpy as np
 
 
 class Contestant:
@@ -13,4 +14,9 @@ class Contestant:
         self.fandom = get_fandom(name, guild)
         self.attack = None
         self.base = self.hate
+        self.f = np.random.randint(1, 100)
+        self.changed_attack = False
+        self.vote = 0
+
+
 
