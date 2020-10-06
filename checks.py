@@ -24,12 +24,12 @@ def is_mod():
     return commands.check(predicate)
 
 
-def is_player():
+def is_role(role_name):
     """Definition of a player"""
 
     def predicate(ctx):
         role_names = [role.name for role in ctx.author.roles]
-        return 'Participant' in role_names
+        return role_name in role_names
 
     return commands.check(predicate)
 

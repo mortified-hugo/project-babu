@@ -60,7 +60,8 @@ class GameCommands(commands.Cog):
     #  Player Commands
     @commands.command()
     @is_player()
-    async def emoji(self, ctx, emoji: discord.Emoji):  # COMMAND BROKEN (CONSULT APERTURE)
+    async def emoji(self, ctx, emoji: str):
+        print(ctx.message.content)
         if ctx.channel.category.name == 'Confession Dial':
             save_emoji(ctx.user.name, ctx.guild, emoji)
             ctx.send('Emoji saved')
